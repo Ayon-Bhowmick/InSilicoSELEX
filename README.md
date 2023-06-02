@@ -11,4 +11,5 @@ Uses [RNAComposer](https://rnacomposer.cs.put.poznan.pl/) to generate 3D structu
 Uses [Hex](https://hex.loria.fr/) to dock RNA sequences to a protein and find the free energy of binding.
 
 `./hex.sh -m <docking method macro file> -l <ligand file>` to run
+
 add `-g` flag to run on GPU
