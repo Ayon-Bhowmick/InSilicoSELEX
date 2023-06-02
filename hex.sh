@@ -34,7 +34,7 @@ if [[ $* != *-r* ]]; then
     exit 1
 fi
 
-while getopts 'm:gr:l:' OPTIONS; do
+while getopts 'm:gr:' OPTIONS; do
     case "$OPTIONS" in
         m) m_flag="$OPTARG"
             ;;
@@ -42,7 +42,7 @@ while getopts 'm:gr:l:' OPTIONS; do
             ;;
         r) receptor="$OPTARG"
             ;;
-        ?) echo "script usage: $(basename \$0) [-m <docking method mac file>] [-r <receptor file>] {-g}"
+        ?) echo "script usage: $(basename \$0) [-m <docking method macro file>] [-r <receptor file>] {-g}"
             exit 1
             ;;
     esac
