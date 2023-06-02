@@ -34,6 +34,7 @@ if [[ $* != *-r* ]]; then
     exit 1
 fi
 
+# parse flags
 while getopts 'm:gr:' OPTIONS; do
     case "$OPTIONS" in
         m) m_flag="$OPTARG"
