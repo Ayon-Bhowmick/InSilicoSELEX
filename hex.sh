@@ -2,7 +2,7 @@
 
 m_flag=""
 g_flag="-nocuda"
-receptor = ""
+receptor=""
 
 # check if pdbFiles folder exists and is not empty
 if [ ! -d "pdbFiles" ]; then
