@@ -2,7 +2,7 @@
 
 m_flag=""
 g_flag="-nocuda"
-receptor=""
+ligand=""
 
 # check if pdbFiles folder exists and is not empty
 if [ ! -d "pdbFiles" ]; then
@@ -35,15 +35,15 @@ if [[ $* != *-r* ]]; then
 fi
 
 # parse flags
-while getopts 'm:gr:' OPTIONS; do
+while getopts 'm:gl:' OPTIONS; do
     case "$OPTIONS" in
         m) m_flag="$OPTARG"
             ;;
         g) g_flag="-cuda"
             ;;
-        r) receptor="$OPTARG"
+        l) ligand="$OPTARG"
             ;;
-        ?) echo "script usage: $(basename \$0) [-m <docking method macro file>] [-r <receptor file>] {-g}"
+        ?) echo "script usage: $(basename \$0) [-m <docking method macro file>] [-l <ligand file>] {-g}"
             exit 1
             ;;
     esac
@@ -51,5 +51,5 @@ done
 
 for file in pdbFiles/*.pdb; do
     echo "Processing $file"
-    hex $g_flag $receptor $file -e $m_flag -l resultLogs/$file.log
+    hex $g_flag $ligand $file -e $m_flag -l resultLogs/$file.log
 done
