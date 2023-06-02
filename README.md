@@ -1,5 +1,4 @@
 # Scrips to automate the In Silico SELEX pipeline
----
 
 ## RNAComposer
 
