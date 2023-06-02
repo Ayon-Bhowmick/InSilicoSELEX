@@ -49,4 +49,6 @@ while getopts 'm:gr:' OPTIONS; do
 done
 
 for file in pdbFiles/*.pdb; do
+    echo "Processing $file"
     hex $g_flag $receptor $file -e $m_flag -l resultLogs/$file.log
+done
