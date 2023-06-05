@@ -17,6 +17,7 @@ if not os.path.exists(f"{PATH_TO_HERE}\\pdbFiles"):
 chrome_options = webdriver.ChromeOptions()
 prefs = {"download.default_directory" : f"{PATH_TO_HERE}\\pdbFiles"}
 chrome_options.add_experimental_option("prefs", prefs)
+chrome_options.add_argument("--headless")
 # opens browser to RNAComposer
 driver = webdriver.Chrome(options=chrome_options)
 driver.get("https://rnacomposer.cs.put.poznan.pl/")
