@@ -45,7 +45,7 @@ if [ h_flag ]; then
                 echo "running hex without GPU"
                 ./hex.sh -m $macro -l $ligand; break
                     ;;
-            * ) echo "Please answer y or n.";;
+            *) echo "Please answer y or n.";;
         esac
     done
 fi
