@@ -23,6 +23,7 @@ if [ r_flag ]; then
         echo "RNAComposer.py not found"
         exit 1
     fi
+    echo "running RNAComposer"
     python RNAComposer.py
 fi
 
@@ -36,8 +37,14 @@ if [ h_flag ]; then
     while true; do
         read -p "Use GPU? (y/n): " yn
         case $yn in
-            [Yy]* ) ./hex.sh -m $macro -l $ligand -g; break;;
-            [Nn]* ) ./hex.sh -m $macro -l $ligand; break;;
+            [Yy]*)
+                echo "running hex with GPU"
+                ./hex.sh -m $macro -l $ligand -g; break
+                    ;;
+            [Nn]*)
+                echo "running hex without GPU"
+                ./hex.sh -m $macro -l $ligand; break
+                    ;;
             * ) echo "Please answer y or n.";;
         esac
     done
