@@ -31,5 +31,14 @@ if [ h_flag ]; then
         echo "hex.sh not found"
         exit 1
     fi
-    ./hex.sh
+    read -p "Enter ligand file: " ligand
+    read -p "Enter docking method macro file: " macro
+    while true; do
+        read -p "Use GPU? (y/n): " yn
+        case $yn in
+            [Yy]* ) ./hex.sh -m $macro -l $ligand -g; break;;
+            [Nn]* ) ./hex.sh -m $macro -l $ligand; break;;
+            * ) echo "Please answer y or n.";;
+        esac
+    done
 fi
