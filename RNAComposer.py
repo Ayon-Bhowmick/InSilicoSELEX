@@ -45,6 +45,7 @@ if __name__ == "__main__":
     prefs = {"download.default_directory" : f"{PATH_TO_HERE}\\pdbFiles"}
     chrome_options.add_experimental_option("prefs", prefs)
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("log-level=3")
 
     queue = []
     with open("GlnA sequences.txt", "r") as f:
