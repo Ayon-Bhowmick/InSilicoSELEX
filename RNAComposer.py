@@ -35,25 +35,27 @@ def download_pdb():
         driver.back()
     driver.quit()
 
-# makes directory for pdb files if it doesn't exist
-if not os.path.exists(f"{PATH_TO_HERE}\\pdbFiles"):
-    os.mkdir(f"{PATH_TO_HERE}\\pdbFiles")
-# moves downloaded files to pdbFiles directory
-chrome_options = webdriver.ChromeOptions()
-prefs = {"download.default_directory" : f"{PATH_TO_HERE}\\pdbFiles"}
-chrome_options.add_experimental_option("prefs", prefs)
-chrome_options.add_argument("--headless")
 
-queue = []
-with open("GlnA sequences.txt", "r") as f:
-    sequences = f.readlines()
-    for i in range(0, len(sequences), 2):
-        name = sequences[i].strip().split()[0].split("_")[0]
-        sequence = sequences[i + 1].strip()
-        sequence = sequence.replace("T", "U")
-        queue.append((name, sequence, i))
+if __name__ == "__main__":
+    # makes directory for pdb files if it doesn't exist
+    if not os.path.exists(f"{PATH_TO_HERE}\\pdbFiles"):
+        os.mkdir(f"{PATH_TO_HERE}\\pdbFiles")
+    # moves downloaded files to pdbFiles directory
+    chrome_options = webdriver.ChromeOptions()
+    prefs = {"download.default_directory" : f"{PATH_TO_HERE}\\pdbFiles"}
+    chrome_options.add_experimental_option("prefs", prefs)
+    chrome_options.add_argument("--headless")
 
-pool = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
-for i in range(MAX_WORKERS):
-    pool.submit(download_pdb)
-pool.shutdown(wait=True)
+    queue = []
+    with open("GlnA sequences.txt", "r") as f:
+        sequences = f.readlines()
+        for i in range(0, len(sequences), 2):
+            name = sequences[i].strip().split()[0].split("_")[0]
+            sequence = sequences[i + 1].strip()
+            sequence = sequence.replace("T", "U")
+            queue.append((name, sequence, i))
+
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
+    for i in range(MAX_WORKERS):
+        pool.submit(download_pdb)
+    pool.shutdown(wait=True)
