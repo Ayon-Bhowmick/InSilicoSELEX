@@ -17,6 +17,12 @@ TEXTAREA_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/t
 SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[7]/td/table/tbody/tr/td[1]/input"
 DOWNLOAD_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/table/tbody/tr[4]/td/div/table/tbody/tr/td[1]/b/a"
 
+def error_handler(i, message, driver):
+    """Takes a screenshot of the error and saves it to the errorFiles directory."""
+    if not os.path.exists(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles"):
+        os.mkdir(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles")
+    driver.save_screenshot(f"errorFiles\\{i}_{message}.png")
+
 def download_pdb():
     """Downloads pdb files from RNAComposer."""
     thread_name = threading.current_thread().name
@@ -39,10 +45,10 @@ def download_pdb():
             print(f"Downloaded {i}.pdb for sequence #{i//2 + 1} in thread {thread_name}")
         except TimeoutException:
             print(f"Timed out for sequence #{i} in thread {thread_name}")
-            driver.save_screenshot(f"errorFiles\\{i}_timed_out.png")
+            error_handler(i, "timeout", driver)
         except Exception as e:
             print(f"Error for sequence #{i} in thread {thread_name}: {e}")
-            driver.save_screenshot(f"errorFiles\\{i}_error.png")
+            error_handler(i, "error", driver)
         driver.back()
     print(f"Thread {thread_name} finished")
     driver.quit()
@@ -56,7 +62,6 @@ if __name__ == "__main__":
     # moves downloaded files to pdbFiles directory
     chrome_options = webdriver.ChromeOptions()
     prefs = {"download.default_directory" : f"{PATH_TO_HERE}\\pdbFiles",
-                            # "printing.print_preview_sticky_settings.appState": dumps(settings),
                             "savefile.default_directory": f"{PATH_TO_HERE}\\RNAComposer\\errorFiles"}
     chrome_options.add_experimental_option("prefs", prefs)
     chrome_options.add_argument("--headless")
