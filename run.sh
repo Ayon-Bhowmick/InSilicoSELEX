@@ -7,13 +7,18 @@ if [ ! -d "pdbFiles" ]; then
     mkdir pdbFiles
 fi
 
-while getopts 'rh' OPTIONS; do
+while getopts 'rhc' OPTIONS; do
     case "$OPTIONS" in
         r) # run RNAComposer
             r_flag=true
             ;;
         h) # run hex
             h_flag=true
+            ;;
+        c) # clean up
+            rm -rf pdbFiles
+            rm -rf RNAComposer.log
+            rm -rf hex.log
             ;;
         ?) echo "script usage: $(basename \$0) [-r] [-h]"
             ;;

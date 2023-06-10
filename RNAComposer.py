@@ -25,7 +25,7 @@ def download_pdb():
     while len(queue) > 0:
         sequence, i = queue.pop(0)
         driver.find_element("xpath", TEXTAREA_XPATH).clear()
-        driver.find_element("xpath", TEXTAREA_XPATH).send_keys(f"#sequence number {i//2 + 1}\n>{i}\n{sequence}")
+        driver.find_element("xpath", TEXTAREA_XPATH).send_keys(f"#sequence number {i}\n>{i}\n{sequence}")
         driver.find_element("xpath", SUBMIT_XPATH).click()
         try:
             WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located(("xpath", DOWNLOAD_XPATH)))
@@ -36,9 +36,9 @@ def download_pdb():
                     break
             print(f"Downloaded {i}.pdb for sequence #{i//2 + 1} in thread {thread_name}")
         except TimeoutException:
-            print(f"Timed out for sequence #{i//2 + 1} in thread {thread_name}")
+            print(f"Timed out for sequence #{i} in thread {thread_name}")
         except:
-            print(f"Error for sequence #{i//2 + 1} in thread {thread_name}")
+            print(f"Error for sequence #{i} in thread {thread_name}")
         driver.back()
     print(f"Thread {thread_name} finished")
     driver.quit()
