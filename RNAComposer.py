@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import os
 import concurrent.futures
 import threading
+import time
 
 WAIT_TIME = 600 # seconds to wait for processing
 MAX_WORKERS = 30 # number of threads to use
@@ -22,7 +23,7 @@ def download_pdb():
     while len(queue) > 0:
         sequence, i = queue.pop(0)
         driver.find_element("xpath", TEXTAREA_XPATH).clear()
-        driver.find_element("xpath", TEXTAREA_XPATH).send_keys(f"#sequence number {i//2 + 1}\n>"+ str(i) + "\n" + sequence)
+        driver.find_element("xpath", TEXTAREA_XPATH).send_keys(f"#sequence number {i//2 + 1}\n>{i}\n{sequence}")
         driver.find_element("xpath", SUBMIT_XPATH).click()
         try:
             WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located(("xpath", DOWNLOAD_XPATH)))
@@ -38,6 +39,7 @@ def download_pdb():
 
 
 if __name__ == "__main__":
+    start = time.time()
     # makes directory for pdb files if it doesn't exist
     if not os.path.exists(f"{PATH_TO_HERE}\\pdbFiles"):
         os.mkdir(f"{PATH_TO_HERE}\\pdbFiles")
@@ -69,4 +71,5 @@ if __name__ == "__main__":
     # rename files
     for file in os.listdir(f"{PATH_TO_HERE}\\pdbFiles"):
         if file.endswith(".pdb"):
-            os.rename(f"{PATH_TO_HERE}\\pdbFiles\\{file}", f"{PATH_TO_HERE}\\pdbFiles\\{name_directory[i.split('.')[0]]}.pdb")
+            os.rename(f"{PATH_TO_HERE}\\pdbFiles\\{file}", f"{PATH_TO_HERE}\\pdbFiles\\{name_directory[i]}.pdb")
+    print(f"Runtime: {time.time() - start}")
