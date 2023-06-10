@@ -7,6 +7,7 @@ import os
 import concurrent.futures
 import threading
 import time
+import pickle
 
 WAIT_TIME = 600 # seconds to wait for processing
 MAX_WORKERS = 30 # number of threads to use
@@ -61,6 +62,9 @@ if __name__ == "__main__":
             sequence = sequences[i + 1].strip()
             sequence = sequence.replace("T", "U")
             queue.append((sequence, i))
+    # save name_directory
+    with open("name_directory.pkl", "wb") as f:
+        pickle.dump(name_directory, f)
 
     # download files in parallel
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
@@ -69,6 +73,8 @@ if __name__ == "__main__":
     pool.shutdown(wait=True)
 
     # rename files
+    with open("name_directory.pkl", "rb") as f:
+        name_directory = pickle.load(f)
     for file in os.listdir(f"{PATH_TO_HERE}\\pdbFiles"):
         if file.endswith(".pdb"):
             os.rename(f"{PATH_TO_HERE}\\pdbFiles\\{file}", f"{PATH_TO_HERE}\\pdbFiles\\{name_directory[i]}.pdb")
