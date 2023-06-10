@@ -17,8 +17,8 @@ while getopts 'rhc' OPTIONS; do
             ;;
         c) # clean up
             rm -rf pdbFiles
-            rm -rf RNAComposer.log
-            rm -rf hex.log
+            cd RNAComposer
+            rm -rf RNAComposer.log RNAComposer.pkl
             ;;
         ?) echo "script usage: $(basename \$0) [-r] [-h]"
             ;;
@@ -26,6 +26,7 @@ while getopts 'rhc' OPTIONS; do
 done
 
 if $r_flag; then
+    cd RNAComposer
     if [ -z "$(ls | grep RNAComposer.py)" ]; then
         echo "RNAComposer.py not found"
         exit 1

@@ -11,7 +11,8 @@ import pickle
 
 WAIT_TIME = 600 # seconds to wait for processing
 MAX_WORKERS = 30 # number of threads to use
-PATH_TO_HERE = os.path.dirname(os.path.abspath(__file__))
+PATH_TO_HERE = "\\".join(os.path.dirname(os.path.abspath(__file__)).split("\\")[:-1])
+print(PATH_TO_HERE)
 TEXTAREA_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[4]/td/textarea"
 SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[7]/td/table/tbody/tr/td[1]/input"
 DOWNLOAD_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/table/tbody/tr[4]/td/div/table/tbody/tr/td[1]/b/a"
@@ -35,6 +36,7 @@ def download_pdb():
                 if f"{i}.pdb" in os.listdir(f"{PATH_TO_HERE}\\pdbFiles"):
                     break
             print(f"Downloaded {i}.pdb for sequence #{i//2 + 1} in thread {thread_name}")
+        # TODO: save state when errored out
         except TimeoutException:
             print(f"Timed out for sequence #{i} in thread {thread_name}")
         except:
@@ -55,6 +57,7 @@ if __name__ == "__main__":
     chrome_options.add_experimental_option("prefs", prefs)
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("log-level=3")
+    chrome_options.add_argument('--kiosk-printing')
 
     # read sequences from file
     name_directory = {}
@@ -83,4 +86,5 @@ if __name__ == "__main__":
     for file in os.listdir(f"{PATH_TO_HERE}\\pdbFiles"):
         if file.endswith(".pdb"):
             os.rename(f"{PATH_TO_HERE}\\pdbFiles\\{file}", f"{PATH_TO_HERE}\\pdbFiles\\{name_directory[i]}.pdb")
-    print(f"Runtime: {time.time() - start}")
+    # TODO: convert seconds to hours, minutes, seconds
+    print(f"\nRuntime: {time.time() - start}")
