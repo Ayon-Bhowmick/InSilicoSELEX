@@ -17,6 +17,7 @@ SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/tab
 DOWNLOAD_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/table/tbody/tr[4]/td/div/table/tbody/tr/td[1]/b/a"
 
 def download_pdb():
+    """Downloads pdb files from RNAComposer."""
     thread_name = threading.current_thread().name
     # opens browser to RNAComposer
     driver = webdriver.Chrome(options=chrome_options)
@@ -29,6 +30,10 @@ def download_pdb():
         try:
             WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located(("xpath", DOWNLOAD_XPATH)))
             driver.find_element("xpath", DOWNLOAD_XPATH).click()
+            # check if file downloaded
+            while True:
+                if f"{i}.pdb" in os.listdir(f"{PATH_TO_HERE}\\pdbFiles"):
+                    break
             print(f"Downloaded {i}.pdb for sequence #{i//2 + 1} in thread {thread_name}")
         except TimeoutException:
             print(f"Timed out for sequence #{i//2 + 1} in thread {thread_name}")
