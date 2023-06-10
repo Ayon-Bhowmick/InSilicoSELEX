@@ -8,11 +8,11 @@ import concurrent.futures
 import threading
 import time
 import pickle
+from json import dumps
 
 WAIT_TIME = 600 # seconds to wait for processing
-MAX_WORKERS = 30 # number of threads to use
+MAX_WORKERS = 2 # number of threads to use
 PATH_TO_HERE = "\\".join(os.path.dirname(os.path.abspath(__file__)).split("\\")[:-1])
-print(PATH_TO_HERE)
 TEXTAREA_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[4]/td/textarea"
 SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[7]/td/table/tbody/tr/td[1]/input"
 DOWNLOAD_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/table/tbody/tr[4]/td/div/table/tbody/tr/td[1]/b/a"
@@ -21,6 +21,7 @@ def download_pdb():
     """Downloads pdb files from RNAComposer."""
     thread_name = threading.current_thread().name
     # opens browser to RNAComposer
+    print(f"Thread {thread_name} started")
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://rnacomposer.cs.put.poznan.pl/")
     while len(queue) > 0:
@@ -31,11 +32,13 @@ def download_pdb():
         try:
             WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located(("xpath", DOWNLOAD_XPATH)))
             driver.find_element("xpath", DOWNLOAD_XPATH).click()
+            driver.save_screenshot(f"errorFiles\\{i}.png")
             # check if file downloaded
             while True:
                 if f"{i}.pdb" in os.listdir(f"{PATH_TO_HERE}\\pdbFiles"):
                     break
             print(f"Downloaded {i}.pdb for sequence #{i//2 + 1} in thread {thread_name}")
+
         # TODO: save state when errored out
         except TimeoutException:
             print(f"Timed out for sequence #{i} in thread {thread_name}")
@@ -53,11 +56,25 @@ if __name__ == "__main__":
         os.mkdir(f"{PATH_TO_HERE}\\pdbFiles")
     # moves downloaded files to pdbFiles directory
     chrome_options = webdriver.ChromeOptions()
-    prefs = {"download.default_directory" : f"{PATH_TO_HERE}\\pdbFiles"}
+    # settings = {
+    #    "recentDestinations": [{
+    #         "id": "Save as PDF",
+    #         "origin": "local",
+    #         "account": "",
+    #     }],
+    #     "selectedDestinationId": "Save as PDF",
+    #     "version": 2
+    # }
+    prefs = {"download.default_directory" : f"{PATH_TO_HERE}\\pdbFiles",
+                            # "printing.print_preview_sticky_settings.appState": dumps(settings),
+                            "savefile.default_directory": f"{PATH_TO_HERE}\\RNAComposer\\errorFiles"}
     chrome_options.add_experimental_option("prefs", prefs)
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("log-level=3")
-    chrome_options.add_argument('--kiosk-printing')
+    chrome_options.add_argument("--start-maximized")
+    chrome_options.add_argument('window-size=2560,10440')
+
+    # chrome_options.add_argument('--kiosk-printing')
 
     # read sequences from file
     name_directory = {}

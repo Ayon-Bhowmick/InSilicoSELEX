@@ -18,7 +18,10 @@ while getopts 'rhc' OPTIONS; do
         c) # clean up
             rm -rf pdbFiles
             cd RNAComposer
-            rm -rf RNAComposer.log RNAComposer.pkl
+            rm -rf RNAComposer.log name_directory.pkl
+            cd errorFiles
+            rm -rf *.png
+            cd ../..
             ;;
         ?) echo "script usage: $(basename \$0) [-r] [-h]"
             ;;
@@ -33,6 +36,7 @@ if $r_flag; then
     fi
     echo "running RNAComposer"
     python -u RNAComposer.py > RNAComposer.log
+    cd ..
 fi
 
 if $h_flag; then
