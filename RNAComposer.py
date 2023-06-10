@@ -53,10 +53,11 @@ if __name__ == "__main__":
         sequences = f.readlines()
         for i in range(0, len(sequences), 2):
             name = sequences[i].strip().split()[0].split("_")[0]
+            print(name)
             sequence = sequences[i + 1].strip()
             sequence = sequence.replace("T", "U")
             queue.append((name, sequence, i))
-
+    exit()
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
     for i in range(MAX_WORKERS):
         pool.submit(download_pdb)

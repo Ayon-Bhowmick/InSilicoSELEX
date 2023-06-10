@@ -8,18 +8,21 @@ if [ ! -d "pdbFiles" ]; then
 fi
 
 while getopts 'rh' OPTIONS; do
-    case “$OPTIONS” in
-        r) r_flag=true
+    case "$OPTIONS" in
+        r) # run RNAComposer
+            r_flag=true
             ;;
-        h) h_flag=true
+        h) # run hex
+            h_flag=true
             ;;
         ?) echo "script usage: $(basename \$0) [-r] [-h]"
             ;;
     esac
 done
 
-if [ r_flag ]; then
-    if [ -z “$(ls | grep RNAComposer.py)” ]; then
+echo $r_flag
+if $r_flag; then
+    if [ -z "$(ls | grep RNAComposer.py)" ]; then
         echo "RNAComposer.py not found"
         exit 1
     fi
@@ -27,8 +30,8 @@ if [ r_flag ]; then
     python RNAComposer.py
 fi
 
-if [ h_flag ]; then
-    if [ -z “$(ls | grep hex.sh)” ]; then
+if $h_flag; then
+    if [ -z "$(ls | grep hex.sh)" ]; then
         echo "hex.sh not found"
         exit 1
     fi
