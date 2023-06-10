@@ -20,14 +20,13 @@ while getopts 'rh' OPTIONS; do
     esac
 done
 
-echo $r_flag
 if $r_flag; then
     if [ -z "$(ls | grep RNAComposer.py)" ]; then
         echo "RNAComposer.py not found"
         exit 1
     fi
     echo "running RNAComposer"
-    python RNAComposer.py
+    python -u RNAComposer.py > RNAComposer.log
 fi
 
 if $h_flag; then
