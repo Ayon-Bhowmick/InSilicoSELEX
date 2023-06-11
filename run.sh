@@ -18,10 +18,8 @@ while getopts 'rhc' OPTIONS; do
         c) # clean up
             rm -rf pdbFiles
             cd RNAComposer
-            rm -rf RNAComposer.log name_directory.pkl
-            cd errorFiles
-            rm -rf *.png
-            cd ../..
+            rm -rf RNAComposer.log name_directory.pkl errorFiles
+            cd ..
             ;;
         ?) echo "script usage: $(basename \$0) [-r] [-h]"
             ;;

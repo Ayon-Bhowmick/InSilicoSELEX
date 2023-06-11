@@ -96,7 +96,10 @@ if __name__ == "__main__":
         name_directory = pickle.load(f)
     for file in os.listdir(f"{PATH_TO_HERE}\\pdbFiles"):
         if file.endswith(".pdb"):
-            file_name = name_directory.get(int(file.split(".")[0]))
+            if (id := file.split(".")[0]).isdigit():
+                file_name = name_directory.get(int(id))
+            else:
+                continue
             if file_name == None:
                 print(f"Could not find name for {file}")
             else:
@@ -106,5 +109,10 @@ if __name__ == "__main__":
                     print(f"File {file_name}.pdb already exists")
                 except Exception as e:
                     print(f"Error renaming {file}: {e}")
-    # TODO: convert seconds to hours, minutes, seconds
-    print(f"\nRuntime: {time.time() - start}")
+
+    seconds = time.time() - start
+    minutes = seconds // 60
+    seconds = seconds - minutes * 60
+    hours = minutes // 60
+    minutes = minutes - hours * 60
+    print(f"Total time: {int(hours)}:{int(minutes)}:{seconds}")
