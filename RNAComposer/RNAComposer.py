@@ -8,7 +8,6 @@ import concurrent.futures
 import threading
 import time
 import pickle
-from json import dumps
 
 WAIT_TIME = 600 # seconds to wait for processing
 MAX_WORKERS = 2 # number of threads to use
@@ -76,11 +75,11 @@ if __name__ == "__main__":
         sequences = f.readlines()
         for i in range(0, len(sequences), 2):
             name = sequences[i].strip().split()[0].split("_")[0]
-            name_directory[i] = name
+            name_directory[i] = name[1:]
             sequence = sequences[i + 1].strip()
             sequence = sequence.replace("T", "U")
             queue.append((sequence, i))
-            if i >= 4:
+            if i >= 2:
                 break
     # save name_directory
     with open("name_directory.pkl", "wb") as f:
@@ -97,6 +96,15 @@ if __name__ == "__main__":
         name_directory = pickle.load(f)
     for file in os.listdir(f"{PATH_TO_HERE}\\pdbFiles"):
         if file.endswith(".pdb"):
-            os.rename(f"{PATH_TO_HERE}\\pdbFiles\\{file}", f"{PATH_TO_HERE}\\pdbFiles\\{name_directory[i]}.pdb")
+            file_name = name_directory.get(int(file.split(".")[0]))
+            if file_name == None:
+                print(f"Could not find name for {file}")
+            else:
+                try:
+                    os.rename(f"{PATH_TO_HERE}\\pdbFiles\\{file}", f"{PATH_TO_HERE}\\pdbFiles\\{file_name}.pdb")
+                except FileExistsError:
+                    print(f"File {file_name}.pdb already exists")
+                except Exception as e:
+                    print(f"Error renaming {file}: {e}")
     # TODO: convert seconds to hours, minutes, seconds
     print(f"\nRuntime: {time.time() - start}")
