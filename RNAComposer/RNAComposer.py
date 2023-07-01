@@ -8,9 +8,10 @@ import concurrent.futures
 import threading
 import time
 import pickle
+from tqdm import tqdm
 
 WAIT_TIME = 600 # seconds to wait for processing
-MAX_WORKERS = 2 # number of threads to use
+MAX_WORKERS = 10 # number of threads to use
 PATH_TO_HERE = "\\".join(os.path.dirname(os.path.abspath(__file__)).split("\\")[:-1])
 TEXTAREA_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[4]/td/textarea"
 SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[7]/td/table/tbody/tr/td[1]/input"
@@ -49,6 +50,7 @@ def download_pdb():
             print(f"Error for sequence #{i} in thread {thread_name}: {e}")
             error_handler(i, "error", driver)
         driver.back()
+        bar.update(1)
     print(f"Thread {thread_name} finished")
     driver.quit()
 
@@ -67,6 +69,7 @@ if __name__ == "__main__":
     chrome_options.add_argument("log-level=3")
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument('window-size=1500,2500')
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
     # read sequences from file
     name_directory = {}
@@ -79,17 +82,19 @@ if __name__ == "__main__":
             sequence = sequences[i + 1].strip()
             sequence = sequence.replace("T", "U")
             queue.append((sequence, i))
-            if i >= 2:
-                break
+
     # save name_directory
     with open("name_directory.pkl", "wb") as f:
         pickle.dump(name_directory, f)
+    print(len(queue))
 
     # download files in parallel
-    pool = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
-    for i in range(MAX_WORKERS):
-        pool.submit(download_pdb)
-    pool.shutdown(wait=True)
+    with tqdm(total=len(queue)) as bar:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
+            futures = [pool.submit(download_pdb) for _ in range(MAX_WORKERS)]
+            # for future in concurrent.futures.as_completed(futures):
+            #     bar.update(1)
+    # pool.shutdown(wait=True)
 
     # rename files
     with open("name_directory.pkl", "rb") as f:
