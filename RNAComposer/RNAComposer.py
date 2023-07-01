@@ -49,8 +49,8 @@ def download_pdb():
         except Exception as e:
             print(f"Error for sequence #{i} in thread {thread_name}: {e}")
             error_handler(i, "error", driver)
-        driver.back()
         bar.update(1)
+        driver.back()
     print(f"Thread {thread_name} finished")
     driver.quit()
 
@@ -86,15 +86,11 @@ if __name__ == "__main__":
     # save name_directory
     with open("name_directory.pkl", "wb") as f:
         pickle.dump(name_directory, f)
-    print(len(queue))
 
     # download files in parallel
     with tqdm(total=len(queue)) as bar:
         with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
             futures = [pool.submit(download_pdb) for _ in range(MAX_WORKERS)]
-            # for future in concurrent.futures.as_completed(futures):
-            #     bar.update(1)
-    # pool.shutdown(wait=True)
 
     # rename files
     with open("name_directory.pkl", "rb") as f:
