@@ -84,6 +84,9 @@ if __name__ == "__main__":
             queue.append((sequence, i))
 
     # save name_directory
+    with open("name_directory.csv", "w") as f:
+        for key, value in name_directory.items():
+            f.write(f"{key},{value}\n")
     with open("name_directory.pkl", "wb") as f:
         pickle.dump(name_directory, f)
 
