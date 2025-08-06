@@ -11,7 +11,7 @@ import time
 from tqdm import tqdm
 
 WAIT_TIME = 600 # seconds to wait for processing
-MAX_WORKERS = 1 # number of threads to use
+MAX_WORKERS = 30 # number of threads to use
 PATH_TO_HERE = "\\".join(os.path.dirname(os.path.abspath(__file__)).split("\\")[:-1])
 TEXTAREA_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[4]/td/textarea"
 SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[7]/td/table/tbody/tr/td[1]/input"
@@ -25,8 +25,10 @@ def download_pdb():
     print(f"Thread {thread_name} started")
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://rnacomposer.cs.put.poznan.pl/")
+    time.sleep(1)
     while len(queue) > 0:
-        sequence, i = queue.pop(0)
+        sequence, name, i = queue.pop(0)
+        print(sequence, name, i)
         driver.find_element("xpath", TEXTAREA_XPATH).clear()
         driver.find_element("xpath", TEXTAREA_XPATH).send_keys(f"#sequence number {i}\n>{i}\n{sequence}")
         driver.find_element("xpath", SUBMIT_XPATH).click()
@@ -44,7 +46,7 @@ def download_pdb():
         except Exception as e:
             print(f"Error for sequence #{i} in thread {thread_name}: {e}")
             error_handler(i, "error", driver)
-        bar.update(1)
+        # bar.update(1)
         driver.back()
     print(f"Thread {thread_name} finished")
     driver.quit()
@@ -65,7 +67,7 @@ if __name__ == "__main__":
     prefs = {"download.default_directory" : f"{PATH_TO_HERE}\\pdbFiles",
                             "savefile.default_directory": f"{PATH_TO_HERE}\\RNAComposer\\errorFiles"}
     chrome_options.add_experimental_option("prefs", prefs)
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("log-level=3")
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument('window-size=1500,2500')
@@ -77,12 +79,11 @@ if __name__ == "__main__":
     with open(f"{PATH_TO_HERE}\\RNAComposer\\GlnA sequences.txt", "r") as f:
         sequences = f.readlines()
         for i in range(0, len(sequences), 2):
-            name = sha256(sequences[i].strip().encode('utf-8')).hexdigest()
+            name = sequences[i].strip()
             name_directory[i] = name
             sequence = sequences[i + 1].strip()
             sequence = sequence.replace("T", "U")
-            queue.append((sequence, name))
-            print(sequence)
+            queue.append((sequence, name, i))
 
     # save name_directory
     with open(f"{PATH_TO_HERE}\\RNAComposer\\name_directory.csv", "w") as f:

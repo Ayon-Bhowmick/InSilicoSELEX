@@ -74,7 +74,7 @@ if __name__ == "__main__":
     # read sequences from file
     name_directory = {}
     queue = []
-    with open("./GlnA sequences.txt", "r") as f:
+    with open("GlnA sequences.txt", "r") as f:
         sequences = f.readlines()
         for i in range(0, len(sequences), 2):
             name = sequences[i].strip().split()[0].split("_")[0]
@@ -84,7 +84,7 @@ if __name__ == "__main__":
             queue.append((sequence, i))
 
     # save name_directory
-    with open(f"{PATH_TO_HERE}\\RNAComposer\\name_directory.csv", "w") as f:
+    with open("name_directory.csv", "w") as f:
         for key, value in name_directory.items():
             f.write(f"{key},{value}\n")
     with open("name_directory.pkl", "wb") as f:
