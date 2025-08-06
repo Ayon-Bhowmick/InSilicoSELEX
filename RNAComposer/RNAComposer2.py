@@ -6,8 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import os
 import concurrent.futures
 import threading
+from hashlib import sha256
 import time
-import pickle
 from tqdm import tqdm
 
 WAIT_TIME = 600 # seconds to wait for processing
@@ -16,12 +16,7 @@ PATH_TO_HERE = "\\".join(os.path.dirname(os.path.abspath(__file__)).split("\\")[
 TEXTAREA_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[4]/td/textarea"
 SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[7]/td/table/tbody/tr/td[1]/input"
 DOWNLOAD_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/table/tbody/tr[4]/td/div/table/tbody/tr/td[1]/b/a"
-
-def error_handler(i, message, driver):
-    """Takes a screenshot of the error and saves it to the errorFiles directory."""
-    if not os.path.exists(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles"):
-        os.mkdir(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles")
-    driver.save_screenshot(f"errorFiles\\{i}_{message}.png")
+queue = []
 
 def download_pdb():
     """Downloads pdb files from RNAComposer."""
@@ -54,6 +49,11 @@ def download_pdb():
     print(f"Thread {thread_name} finished")
     driver.quit()
 
+def error_handler(i, message, driver):
+    """Takes a screenshot of the error and saves it to the errorFiles directory."""
+    if not os.path.exists(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles"):
+        os.mkdir(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles")
+    driver.save_screenshot(f"errorFiles\\{i}_{message}.png")
 
 if __name__ == "__main__":
     start = time.time()
@@ -74,21 +74,20 @@ if __name__ == "__main__":
     # read sequences from file
     name_directory = {}
     queue = []
-    with open("./GlnA sequences.txt", "r") as f:
+    with open(f"{PATH_TO_HERE}\\RNAComposer\\GlnA sequences.txt", "r") as f:
         sequences = f.readlines()
         for i in range(0, len(sequences), 2):
-            name = sequences[i].strip().split()[0].split("_")[0]
-            name_directory[i] = name[1:]
+            name = sha256(sequences[i].strip().encode('utf-8')).hexdigest()
+            name_directory[i] = name
             sequence = sequences[i + 1].strip()
             sequence = sequence.replace("T", "U")
-            queue.append((sequence, i))
+            queue.append((sequence, name))
+            print(sequence)
 
     # save name_directory
     with open(f"{PATH_TO_HERE}\\RNAComposer\\name_directory.csv", "w") as f:
         for key, value in name_directory.items():
             f.write(f"{key},{value}\n")
-    with open("name_directory.pkl", "wb") as f:
-        pickle.dump(name_directory, f)
 
     # download files in parallel
     with tqdm(total=len(queue)) as bar:
