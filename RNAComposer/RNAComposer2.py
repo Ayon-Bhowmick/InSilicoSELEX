@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 WAIT_TIME = 600 # seconds to wait for processing
 MAX_WORKERS = 30 # number of threads to use
-PATH_TO_HERE = "\\".join(os.path.dirname(os.path.abspath(__file__)).split("\\")[:-1])
+PATH_TO_HERE = "/".join(os.path.dirname(os.path.abspath(__file__)).split("/")[:-1])
 TEXTAREA_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[4]/td/textarea"
 SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[7]/td/table/tbody/tr/td[1]/input"
 DOWNLOAD_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/table/tbody/tr[4]/td/div/table/tbody/tr/td[1]/b/a"
@@ -53,19 +53,19 @@ def download_pdb():
 
 def error_handler(i, message, driver):
     """Takes a screenshot of the error and saves it to the errorFiles directory."""
-    if not os.path.exists(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles"):
-        os.mkdir(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles")
-    driver.save_screenshot(f"errorFiles\\{i}_{message}.png")
+    if not os.path.exists(f"{PATH_TO_HERE}/RNAComposer/errorFiles"):
+        os.mkdir(f"{PATH_TO_HERE}/RNAComposer/errorFiles")
+    driver.save_screenshot(f"errorFiles/{i}_{message}.png")
 
 if __name__ == "__main__":
     start = time.time()
     # makes directory for pdb files if it doesn't exist
-    if not os.path.exists(f"{PATH_TO_HERE}\\pdbFiles"):
-        os.mkdir(f"{PATH_TO_HERE}\\pdbFiles")
+    if not os.path.exists(f"{PATH_TO_HERE}/pdbFiles"):
+        os.mkdir(f"{PATH_TO_HERE}/pdbFiles")
     # moves downloaded files to pdbFiles directory
     chrome_options = webdriver.ChromeOptions()
-    prefs = {"download.default_directory" : f"{PATH_TO_HERE}\\pdbFiles",
-                            "savefile.default_directory": f"{PATH_TO_HERE}\\RNAComposer\\errorFiles"}
+    prefs = {"download.default_directory" : f"{PATH_TO_HERE}\pdbFiles",
+                            "savefile.default_directory": f"{PATH_TO_HERE}\RNAComposer\errorFiles"}
     chrome_options.add_experimental_option("prefs", prefs)
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("log-level=3")
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     # read sequences from file
     name_directory = {}
     queue = []
-    with open(f"{PATH_TO_HERE}\\RNAComposer\\GlnA sequences.txt", "r") as f:
+    with open(f"{PATH_TO_HERE}/RNAComposer/GlnA sequences.txt", "r") as f:
         sequences = f.readlines()
         for i in range(0, len(sequences), 2):
             name = sequences[i].strip()
@@ -86,7 +86,7 @@ if __name__ == "__main__":
             queue.append((sequence, name, i))
 
     # save name_directory
-    with open(f"{PATH_TO_HERE}\\RNAComposer\\name_directory.csv", "w") as f:
+    with open(f"{PATH_TO_HERE}/RNAComposer/name_directory.csv", "w") as f:
         for key, value in name_directory.items():
             f.write(f"{key},{value}\n")
 
