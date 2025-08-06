@@ -64,8 +64,8 @@ if __name__ == "__main__":
         os.mkdir(f"{PATH_TO_HERE}/pdbFiles")
     # moves downloaded files to pdbFiles directory
     chrome_options = webdriver.ChromeOptions()
-    prefs = {"download.default_directory" : f"{PATH_TO_HERE}\pdbFiles",
-                            "savefile.default_directory": f"{PATH_TO_HERE}\RNAComposer\errorFiles"}
+    prefs = {"download.default_directory" : f"{PATH_TO_HERE}/pdbFiles",
+                            "savefile.default_directory": f"{PATH_TO_HERE}/RNAComposer/errorFiles"}
     chrome_options.add_experimental_option("prefs", prefs)
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("log-level=3")
