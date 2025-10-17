@@ -9,19 +9,20 @@ import threading
 import time
 import pickle
 from tqdm import tqdm
+from pathlib import Path
 
 WAIT_TIME = 600 # seconds to wait for processing
 MAX_WORKERS = 1 # number of threads to use
-PATH_TO_HERE = "\\".join(os.path.dirname(os.path.abspath(__file__)).split("\\")[:-1])
+PATH_TO_HERE = Path("\\".join(os.path.dirname(os.path.abspath(__file__)).split("\\")[:-1]))
 TEXTAREA_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[4]/td/textarea"
 SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[7]/td/table/tbody/tr/td[1]/input"
 DOWNLOAD_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/table/tbody/tr[4]/td/div/table/tbody/tr/td[1]/b/a"
 
 def error_handler(i, message, driver):
     """Takes a screenshot of the error and saves it to the errorFiles directory."""
-    if not os.path.exists(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles"):
-        os.mkdir(f"{PATH_TO_HERE}\\RNAComposer\\errorFiles")
-    driver.save_screenshot(f"errorFiles\\{i}_{message}.png")
+    if not os.path.exists(PATH_TO_HERE / "RNAComposer" / "errorFiles"):
+        os.mkdir(PATH_TO_HERE / "RNAComposer" / "errorFiles")
+    driver.save_screenshot(PATH_TO_HERE / "RNAComposer" / "errorFiles" / f"{i}_{message}.png")
 
 def download_pdb():
     """Downloads pdb files from RNAComposer."""
@@ -40,7 +41,7 @@ def download_pdb():
             driver.find_element("xpath", DOWNLOAD_XPATH).click()
             # check if file downloaded
             while True:
-                if f"{i}.pdb" in os.listdir(f"{PATH_TO_HERE}\\pdbFiles"):
+                if f"{i}.pdb" in os.listdir(PATH_TO_HERE / "pdbFiles"):
                     break
             print(f"Downloaded {i}.pdb for sequence #{i//2 + 1} in thread {thread_name}")
         except TimeoutException:
