@@ -13,6 +13,7 @@ from pathlib import Path
 
 WAIT_TIME = 600 # seconds to wait for processing
 MAX_WORKERS = 1 # number of threads to use
+SLOWDOWN_TIME = 5 # seconds to wait between submissions to avoid overwhelming the server
 PATH_TO_HERE = Path(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])
 TEXTAREA_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[4]/td/textarea"
 SUBMIT_XPATH = "/html/body/table/tbody/tr[2]/td[2]/div/table/tbody/tr/td/div/table/tbody/tr/td/div/form/table/tbody/tr[7]/td/table/tbody/tr/td[1]/input"
@@ -52,6 +53,7 @@ def download_pdb():
             error_handler(i, "error", driver)
         bar.update(1)
         driver.back()
+        time.sleep(SLOWDOWN_TIME)
     print(f"Thread {thread_name} finished")
     driver.quit()
 
